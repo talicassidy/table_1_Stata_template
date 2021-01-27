@@ -26,6 +26,8 @@ local lbe : value label $exposure
 local vlabel : label `lbe' `l'
 file write table1 ",`vlabel'"
 }
+file write table1 ",Total"
+
 
 file write table1 _n "N"
 foreach l of local levels {
@@ -33,7 +35,9 @@ count if $exposure ==`l'
 local n = r(N)
 file write table1 ",`n'" 
 }
-
+count if $exposure !=.
+local n = r(N)
+file write table1 ",`n'" 
 
 foreach var in   $cat_vars {
 levelsof `var', local(level_var)
@@ -51,6 +55,12 @@ local n=r(N)
 local p=string(round(`n'/`N'*100,0.1))
 file write table1 ",`n' (`p'%)"
 }
+count if $exposure !=.
+local N=r(N)
+count if $exposure !=.   & `var' ==`l'
+local n=r(N)
+local p=string(round(`n'/`N'*100,0.1))
+file write table1 ",`n' (`p'%)"
 }
 }
 
@@ -66,6 +76,12 @@ local n=r(N)
 local p=string(round(`n'/`N'*100,0.1))
 file write table1 ",`n' (`p'%)"
 }
+count if $exposure !=. 
+local N=r(N)
+count if $exposure !=.  & `var' ==1
+local n=r(N)
+local p=string(round(`n'/`N'*100,0.1))
+file write table1 ",`n' (`p'%)"
 }
 
 foreach var in  $cont_vars {
@@ -78,6 +94,11 @@ local p25=round(r(p25), 0.1)
 local p75=round(r(p75), 0.1)
 file write table1 " ,`med' (`p25'-`p75')"
 }
+summ `var' if  $exposure !=. , d
+local med=round(r(p50), 0.1)
+local p25=round(r(p25), 0.1)
+local p75=round(r(p75), 0.1)
+file write table1 " ,`med' (`p25'-`p75')"
 }
 
 
